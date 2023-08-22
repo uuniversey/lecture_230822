@@ -113,7 +113,7 @@
 
 
 
-# 4615. 노드의 합
+# 4615. 재미있는 오셀로 게임
 
 import sys
 sys.stdin = open('input_4615.txt', 'r')
@@ -123,18 +123,28 @@ def check(y, x):
     eight = [[0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, 1]]
     center = board[x][y]
     for di, dj in eight:
+        stack_num = 0
         ni = x + di
         nj = y + dj
         if 0 <= ni < N and 0 <= nj < N:
-            if board[ni][nj] != center:
-                stack.append([ni, nj])
-                while board[ni][nj] != center:
-                    ni += di
-                    nj += dj
-                    if 0 <= ni < N and 0 <= nj < N:
-                        continue
-                    else:
-                        break
+            if board[ni][nj] != 0:
+                if board[ni][nj] != center:
+                    while board[ni][nj] != center:
+                        stack.append([ni, nj])
+                        stack_num += 1
+                        ni += di
+                        nj += dj
+                        if 0 <= ni < N and 0 <= nj < N:
+                            if board[ni][nj] == 0:
+                                for _ in range(stack_num):
+                                    stack.pop()
+                                break
+                            else:
+                                continue
+                        else:
+                            for _ in range(stack_num):
+                                stack.pop()
+                            break
 
 
 T = int(input())
@@ -155,9 +165,20 @@ for tc in range(1, T+1):
             board[col-1][row-1] = 1
             check(row-1, col-1)
             while len(stack) != 0:
-                stack.pop()
+                execute = stack.pop(0)
+                if board[execute[0]][execute[1]] == 2:
+                    board[execute[0]][execute[1]] = 1
+                elif board[execute[0]][execute[1]] == 1:
+                    board[execute[0]][execute[1]] = 2
         else:
-            pass
+            board[col-1][row-1] = 2
+            check(row-1, col-1)
+            while len(stack) != 0:
+                execute = stack.pop(0)
+                if board[execute[0]][execute[1]] == 2:
+                    board[execute[0]][execute[1]] = 1
+                elif board[execute[0]][execute[1]] == 1:
+                    board[execute[0]][execute[1]] = 2
 
     for row1 in range(N):
         for col1 in range(N):
@@ -166,4 +187,4 @@ for tc in range(1, T+1):
             elif board[row1][col1] == 1:
                 black += 1
 
-    print(f'#{tc} {white} {black}')
+    print(f'#{tc} {black} {white}')
